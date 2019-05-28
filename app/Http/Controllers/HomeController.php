@@ -12,7 +12,7 @@ class HomeController extends Controller
 {
     public function generatePDF()
     {
-        $lang = "en";
+        $lang = "fr";
 
         $courseFormatter = new CourseFormatter();
 
@@ -71,14 +71,17 @@ class HomeController extends Controller
 
     private function getCometCourses($lang) {
         if($lang === "fr") {
-            return collect(DB::connection('mysql')->select("SELECT ct.id, ct.titleEn, ct.publishDateEn, ct.publishDateFr, ct.completionTime, ct.descriptionEn, ct.titleFr, ct.descriptionFr, ct.topics
-            FROM `curltest`.`test` ct
-            INNER JOIN `curltest`.`msc_comet` msc ON TRIM(ct.titleEn) = TRIM(msc.titleEn)
-            WHERE ct.titleFr != ''"));
+            return collect(DB::connection('mysql')->select("SELECT ct.id, ct.titleFr as 'longTitleFr', ct.titleFr as 'shortTitleFr', ct.publishDateFr, ct.completionTime, ct.descriptionFr, ct.topics, ct.frURL
+            FROM `curltest`.`comet_french` ct
+            INNER JOIN `curltest`.`msc_comet` msc ON TRIM(ct.titleFr) = TRIM(msc.titleFr)
+            WHERE msc.titleFr != ''
+            ORDER BY `longTitleFr` ASC"));
         } else if ($lang === "en") {
-            return collect(DB::connection('mysql')->select("SELECT ct.id, ct.titleEn, ct.publishDateEn, ct.publishDateFr, ct.completionTime, ct.descriptionEn, ct.titleFr, ct.descriptionFr, ct.topics
-            FROM `curltest`.`test` ct
-            INNER JOIN `curltest`.`msc_comet` msc ON TRIM(ct.titleEn) = TRIM(msc.titleEn)"));
+            return collect(DB::connection('mysql')->select("SELECT ct.id, ct.titleEn as 'longTitleEn', ct.titleEn as 'shortTitleEn', ct.publishDateEn, ct.completionTime, ct.descriptionEn, ct.topics, ct.enURL
+            FROM `curltest`.`comet_english` ct
+            INNER JOIN `curltest`.`msc_comet` msc ON TRIM(ct.titleEn) = TRIM(msc.titleEn)
+            WHERE msc.titleEn != ''
+            ORDER BY `longTitleEn` ASC"));
         }
     }
 }

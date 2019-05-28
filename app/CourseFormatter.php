@@ -71,9 +71,15 @@ class CourseFormatter {
             if($plusFlag) {
                 $row->completionTime = $row->completionTime . "+";
             }
-            $row->descriptionEn = $this->truncate($row->descriptionEn);
-            $row->descriptionFr = $this->truncate($row->descriptionFr);
-
+            
+            if($lang === 'fr') {
+                $row->descriptionFr = $this->truncate($row->descriptionFr);
+                $row->shortTitleFr = $this->truncate($row->shortTitleFr, 90);
+            } else if($lang === 'en') {
+                $row->descriptionEn = $this->truncate($row->descriptionEn);
+                $row->shortTitleEn = $this->truncate($row->shortTitleEn, 90);
+            }
+            
             $row->topics = $this->truncate($row->topics, 70);
         });
         return $formattedCollection;
@@ -137,7 +143,7 @@ class CourseFormatter {
         if(strlen($string) > $length) {
           $string = wordwrap($string, $length);
           $string = explode("\n", $string, 2);
-          $string = $string[0] . $append;
+          $string = rtrim($string[0], ",") . $append;
         }
         return $string;
     }
