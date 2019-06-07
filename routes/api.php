@@ -20,3 +20,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('original-titles', 'FuzzySearchController@getOriginalTitles');
 
 Route::get('correct-titles','FuzzySearchController@getCorrectTitles');
+
+Route::post('original-titles', 'FuzzySearchController@storeCorrectTitles');
+
+//uploads
+Route::post('store', 'UploadController@store');
+Route::post('upload', 'UploadController@upload');

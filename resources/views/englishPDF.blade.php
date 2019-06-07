@@ -57,7 +57,7 @@
         </table>
     @endforeach
     <p style="page-break-before: always"></p>
-    
+
     <h2>Training Portal Courses</h2>
     @foreach ($moodleCourses as $moodleCourse)
     <div id="moodle-{{ $moodleCourse->id }}">
@@ -65,14 +65,21 @@
         <table style="width: 100%">
             <tbody>
                 <tr>
-                    <td><strong>Publish date</strong>:</td>
+                    @if($moodleCourse->lastmodified > $moodleCourse->timecreated)
+                        <td><strong>Last modified</strong>: {{ $moodleCourse->lastmodified }}</td>
+                    @else
+                        <td><strong>Date published</strong>: {{ $moodleCourse->timecreated }}</td>
+                    @endif
                     <td style="text-align: right;"><strong>Estimated time to complete</strong>: {{ $moodleCourse->estimatedtime }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><p><strong>Description</strong>: {{ $moodleCourse->description }}</p></td>
                 </tr>
             </tbody>
         </table>
-        <p><strong>Description</strong>: {{ $moodleCourse->description }}</p>
+
         @if ($loop->iteration % 4 !== 0 && !$loop->last)
-            <div style="margin: 2rem 0 1rem 0;">
+            <div style="margin: 1rem 0 1rem 0;">
                 <div style="margin: 0 auto; width: 30%; height: 1px; border-top: 1px solid #000;"></div>
             </div>
         @endif
@@ -91,14 +98,20 @@
         <table style="width: 100%">
             <tbody>
                 <tr>
-                    <td><strong>Publish date</strong>: {{ $cometCourse->publishDateEn }}</td>
+                    @if($cometCourse->lastUpdatedEn > $cometCourse->publishDateEn)
+                        <td><strong>Last modified</strong>: {{ $cometCourse->lastUpdatedEn }}</td>
+                    @else
+                        <td><strong>Date published</strong>: {{ $cometCourse->publishDateEn }}</td>
+                    @endif
                     <td style="text-align: right;"><strong>Estimated time to complete</strong>: {{ $cometCourse->completionTime }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><p><strong>Description</strong>: {!! $cometCourse->descriptionEn !!}</p></td>
                 </tr>
             </tbody>
         </table>
-        <p><strong>Description</strong>: {!! $cometCourse->descriptionEn !!}</p>
         @if ($loop->iteration % 4 !== 0 && !$loop->last)
-            <div style="margin: 2rem 0 1rem 0;">
+            <div style="margin: 1rem 0 1rem 0;">
                 <div style="margin: 0 auto; width: 30%; height: 1px; border-top: 1px solid #000;"></div>
             </div>
         @endif

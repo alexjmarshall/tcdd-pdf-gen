@@ -65,14 +65,20 @@
         <table style="width: 100%">
             <tbody>
                 <tr>
-                    <td><strong>Date de publication</strong>:</td>
+                    @if($moodleCourse->lastmodified > $moodleCourse->timecreated)
+                        <td><strong>Date modifi&eacute;e</strong>: {{ $moodleCourse->lastmodified }}</td>
+                    @else
+                        <td><strong>Date de publication</strong>: {{ $moodleCourse->timecreated }}</td>
+                    @endif
                     <td style="text-align: right;"><strong>Dur&eacute;e estim&eacute;e</strong>: {{ $moodleCourse->estimatedtime }}</td>
+                    <tr>
+                        <td colspan="2"><p><strong>Description</strong>: {{ $moodleCourse->description }}</p></td>
+                    </tr>
                 </tr>
             </tbody>
         </table>
-        <p><strong>Description</strong>: {{ $moodleCourse->description }}</p>
         @if ($loop->iteration % 4 !== 0 && !$loop->last)
-            <div style="margin: 2rem 0 1rem 0;">
+            <div style="margin: 1rem 0 1rem 0;">
                 <div style="margin: 0 auto; width: 30%; height: 1px; border-top: 1px solid #000;"></div>
             </div>
         @endif
@@ -91,14 +97,20 @@
         <table style="width: 100%">
             <tbody>
                 <tr>
-                    <td><strong>Date de publication</strong>: {{ $cometCourse->publishDateFr }}</td>
+                @if($cometCourse->lastUpdatedFr > $cometCourse->publishDateFr)
+                        <td><strong>Date modifi&eacute;e</strong>: {{ $cometCourse->lastUpdatedFr }}</td>
+                    @else
+                        <td><strong>Date de publication</strong>: {{ $cometCourse->publishDateFr }}</td>
+                    @endif
                     <td style="text-align: right;"><strong>Dur&eacute;e estim&eacute;e</strong>: {!! $cometCourse->completionTime !!}</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><p><strong>Description</strong>: {!! $cometCourse->descriptionFr !!}</p></td>
                 </tr>
             </tbody>
         </table>
-        <p><strong>Description</strong>: {!! $cometCourse->descriptionFr !!}</p>
         @if ($loop->iteration % 4 !== 0 && !$loop->last)
-            <div style="margin: 2rem 0 1rem 0;">
+            <div style="margin: 1rem 0 1rem 0;">
                 <div style="margin: 0 auto; width: 30%; height: 1px; border-top: 1px solid #000;"></div>
             </div>
         @endif
