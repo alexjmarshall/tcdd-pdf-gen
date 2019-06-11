@@ -71,7 +71,7 @@ class HomeController extends Controller
     */
     public function pdfview()
     {
-        $lang = "en";
+        $lang = "fr";
 
         $courseFormatter = new CourseFormatter();
 
@@ -176,7 +176,7 @@ class HomeController extends Controller
     private function getCometCourses($lang) {
         if($lang === "fr") {
             $cometCourses = Cache::rememberForever('cometCoursesFr', function () {
-                return collect(DB::connection('mysql')->select("SELECT ct.id, ct.title as 'longTitleFr', ct.title as 'shortTitleFr', ct.publish_date as 'publishDateFr', ct. last_updated as 'lastUpdatedFr', ct.completion_time as 'completionTime', ct.description as 'descriptionFr', ct.topics, ct.url as 'frURL'
+                return collect(DB::connection('mysql')->select("SELECT ct.id, ct.title as 'longTitle', ct.title as 'shortTitle', ct.publish_date as 'publishDate', ct. last_updated as 'lastUpdated', ct.completion_time as 'completionTime', ct.description as 'description', ct.topics, ct.url as 'URL'
                 FROM `curltest`.`comet_modules` ct
                 WHERE ct.include_in_catalog = TRUE
                 AND ct.language = 'french'
@@ -184,7 +184,7 @@ class HomeController extends Controller
             });
         } else if ($lang === "en") {
             $cometCourses = Cache::rememberForever('cometCoursesEn', function () {
-                return collect(DB::connection('mysql')->select("SELECT ct.id, ct.title as 'longTitleEn', ct.title as 'shortTitleEn', ct.publish_date as 'publishDateEn', ct. last_updated as 'lastUpdatedEn', ct.completion_time as 'completionTime', ct.description as 'descriptionEn', ct.topics, ct.url as 'enURL'
+                return collect(DB::connection('mysql')->select("SELECT ct.id, ct.title as 'longTitle', ct.title as 'shortTitle', ct.publish_date as 'publishDate', ct. last_updated as 'lastUpdated', ct.completion_time as 'completionTime', ct.description as 'description', ct.topics, ct.url as 'URL'
                 FROM `curltest`.`comet_modules` ct
                 WHERE ct.include_in_catalog = TRUE
                 AND ct.language = 'english'

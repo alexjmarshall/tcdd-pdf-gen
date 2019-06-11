@@ -154,17 +154,10 @@ class CourseFormatter {
                 $row->completionTime = $row->completionTime . "+";
             }
             
-            if($lang === 'fr') {
-                $row->descriptionFr = $this->truncate($row->descriptionFr);
-                $row->shortTitleFr = $this->truncate($row->shortTitleFr, 90);
-                $row->lastUpdatedFr = $row->lastUpdatedFr !== "" ? Carbon::parse($row->lastUpdatedFr)->toDateString() : "";
-                $row->publishDateFr = Carbon::parse($row->publishDateFr)->toDateString();
-            } else if($lang === 'en') {
-                $row->descriptionEn = $this->truncate($row->descriptionEn);
-                $row->shortTitleEn = $this->truncate($row->shortTitleEn, 90);
-                $row->lastUpdatedEn = $row->lastUpdatedEn !== "" ? Carbon::parse($row->lastUpdatedEn)->toDateString() : "";
-                $row->publishDateEn = Carbon::parse($row->publishDateEn)->toDateString();
-            }
+            $row->description = $this->truncate($row->description);
+            $row->shortTitle = $this->truncate($row->shortTitle, 90);
+            $row->lastUpdated = $row->lastUpdated !== "" ? Carbon::parse($row->lastUpdated)->toDateString() : "";
+            $row->publishDate = Carbon::parse($row->publishDate)->toDateString();
             $row->topics = $this->truncate($row->topics, 70);
         });
         return $formattedCollection;

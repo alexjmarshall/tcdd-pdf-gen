@@ -67,7 +67,7 @@ $page = 0;
         <table class="table-of-contents">
             <tbody>
                 <tr>
-                    <td><a href="#comet-{{ $cometCourse->id }}">{{ $cometCourse->shortTitleFr }}</a></td>
+                    <td><a href="#comet-{{ $cometCourse->id }}">{{ $cometCourse->shortTitle }}</a></td>
                     <td></td>
                     <td><a href="#comet-{{ $cometCourse->id }}">{{ ceil($loop->iteration / $coursesPerPage) + (!$page ? $numOfToCPages : $page) }}</a></td>
                 </tr>
@@ -129,18 +129,18 @@ $page = 0;
             <table style="width: 100%">
                 <tbody>
                     <tr>
-                        <td colspan="2"><h4 style="margin-bottom: .25rem;"><a href="{{ $cometCourse->frURL }}">{{ $cometCourse->longTitleFr }}</a></h4></td>
+                        <td colspan="2"><h4 style="margin-bottom: .25rem;"><a href="{{ $cometCourse->URL }}">{{ $cometCourse->longTitle }}</a></h4></td>
                         </tr>
                     <tr>
-                        @if($cometCourse->lastUpdatedFr > $cometCourse->publishDateFr)
-                            <td><strong>Date modifi&eacute;e</strong>: {{ $cometCourse->lastUpdatedFr }}</td>
+                        @if($cometCourse->lastUpdated > $cometCourse->publishDate)
+                            <td><strong>Date modifi&eacute;e</strong>: {{ $cometCourse->lastUpdated }}</td>
                         @else
-                            <td><strong>Date de publication</strong>: {{ $cometCourse->publishDateFr }}</td>
+                            <td><strong>Date de publication</strong>: {{ $cometCourse->publishDate }}</td>
                         @endif
                         <td style="text-align: right;"><strong>Dur&eacute;e estim&eacute;e</strong>: {!! $cometCourse->completionTime !!}</td>
                     </tr>
                     <tr>
-                        <td colspan="2"><p style="margin-top: .25rem;"><strong>Description</strong>: {!! $cometCourse->descriptionFr !!}</p></td>
+                        <td colspan="2"><p style="margin-top: .25rem;"><strong>Description</strong>: {!! $cometCourse->description !!}</p></td>
                     </tr>
                 </tbody>
             </table>

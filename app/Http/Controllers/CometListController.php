@@ -8,17 +8,14 @@ use Illuminate\Support\Facades\DB;
 class CometListController extends Controller
 {
     function index () {
-        // return all COMET courses that are not already in blacklist
         $collection = collect(DB::connection('mysql2')
             ->select("SELECT *
             FROM `curltest`.`comet_modules`
             ORDER BY title"));
 
-        return $collection;
-        
-        // ->each(function ($row) {
-        //     $this->truncate($row->)
-        // })
+        return $collection->each(function ($row) {
+            $row->description = $this->truncate($row->description);
+        });
     }
 
     function update () {
