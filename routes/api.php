@@ -18,11 +18,17 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('original-titles', 'FuzzySearchController@getOriginalTitles');
-
 Route::get('correct-titles','FuzzySearchController@getCorrectTitles');
-
 Route::post('original-titles', 'FuzzySearchController@storeCorrectTitles');
 
 //uploads
 Route::post('store', 'UploadController@store');
 Route::post('upload', 'UploadController@upload');
+
+//catalog pdfs
+Route::get('pdfview', 'HomeController@pdfview');
+Route::get('generate-pdf','HomeController@generatePDF');
+
+//comet list
+Route::get('comet-modules', 'CometListController@index');
+Route::put('comet-modules', 'CometListController@update');
