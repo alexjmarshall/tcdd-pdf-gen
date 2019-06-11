@@ -44,7 +44,7 @@ class CourseFormatter {
                     $row->objectives = preg_replace('~[\s\S]*<div id="objectives-content">|</div>\s*<div id="description">[\s\S]*~', "", $frenchSummary);
                 });
             });
-            return $frenchFormattedCollection;
+            return $frenchFormattedCollection->sortBy('name');
             // $frenchFormattedCollection = $collection->each(function ($row) {
             //     $summaryArr = preg_split("/<p>{mlang} /", $row->keywords);
             //     $frenchSummary = $summaryArr[1];
@@ -92,7 +92,7 @@ class CourseFormatter {
                     $row->objectives = preg_replace('~[\s\S]*<div id="objectives-content">|</div>\s*<div id="description">[\s\S]*~', "", $englishSummary);
                 });
             });
-            return $englishFormattedCollection;
+            return $englishFormattedCollection->sortBy('name');
             // $englishFormattedCollection = $collection->each(function ($row) {
             //     $summaryArr = preg_split("/<p>{mlang} /", $row->keywords);
             //     $englishSummary = $summaryArr[0];

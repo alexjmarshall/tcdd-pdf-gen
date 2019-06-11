@@ -124,6 +124,7 @@ $page = 0;
     <p style="page-break-before: always"></p>
 
     <h2>Cours COMET</h2>
+    <i>Remarque: la version française de ce catalogue peut inclure des cours non répertoriés ici.</i>
     @foreach ($cometCourses as $cometCourse)
         <div id="comet-{{ $cometCourse->id }}">
             <table style="width: 100%">

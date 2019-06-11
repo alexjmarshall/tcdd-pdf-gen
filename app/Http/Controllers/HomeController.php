@@ -20,7 +20,7 @@ class HomeController extends Controller
     */
     public function generatePDF()
     {
-        $lang = "fr";
+        $lang = "en";
 
         $courseFormatter = new CourseFormatter();
 
@@ -71,7 +71,7 @@ class HomeController extends Controller
     */
     public function pdfview()
     {
-        $lang = "fr";
+        $lang = "en";
 
         $courseFormatter = new CourseFormatter();
 
@@ -125,7 +125,7 @@ class HomeController extends Controller
             ->select("SELECT c.id, c.name
             FROM `mdl_course_categories` c
             WHERE c.id NOT IN (10, 28, 29)
-            ORDER BY c.name desc"));
+            ORDER BY c.name"));
 
         
 
@@ -175,21 +175,17 @@ class HomeController extends Controller
     */
     private function getCometCourses($lang) {
         if($lang === "fr") {
-            $cometCourses = Cache::rememberForever('cometCoursesFr', function () {
-                return collect(DB::connection('mysql')->select("SELECT ct.id, ct.title as 'longTitle', ct.title as 'shortTitle', ct.publish_date as 'publishDate', ct. last_updated as 'lastUpdated', ct.completion_time as 'completionTime', ct.description as 'description', ct.topics, ct.url as 'URL'
+            $cometCourses = collect(DB::connection('mysql')->select("SELECT ct.id, ct.title as 'longTitle', ct.title as 'shortTitle', ct.publish_date as 'publishDate', ct. last_updated as 'lastUpdated', ct.completion_time as 'completionTime', ct.description as 'description', ct.topics, ct.url as 'URL'
                 FROM `curltest`.`comet_modules` ct
                 WHERE ct.include_in_catalog = TRUE
                 AND ct.language = 'french'
                 ORDER BY ct.title"));
-            });
         } else if ($lang === "en") {
-            $cometCourses = Cache::rememberForever('cometCoursesEn', function () {
-                return collect(DB::connection('mysql')->select("SELECT ct.id, ct.title as 'longTitle', ct.title as 'shortTitle', ct.publish_date as 'publishDate', ct. last_updated as 'lastUpdated', ct.completion_time as 'completionTime', ct.description as 'description', ct.topics, ct.url as 'URL'
+            $cometCourses = collect(DB::connection('mysql')->select("SELECT ct.id, ct.title as 'longTitle', ct.title as 'shortTitle', ct.publish_date as 'publishDate', ct. last_updated as 'lastUpdated', ct.completion_time as 'completionTime', ct.description as 'description', ct.topics, ct.url as 'URL'
                 FROM `curltest`.`comet_modules` ct
                 WHERE ct.include_in_catalog = TRUE
                 AND ct.language = 'english'
                 ORDER BY ct.title"));
-            });
         }
         return $cometCourses;
     }
