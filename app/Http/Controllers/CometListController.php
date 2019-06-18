@@ -11,6 +11,7 @@ class CometListController extends Controller
         $collection = collect(DB::connection('mysql2')
             ->select("SELECT *
             FROM `curltest`.`comet_modules`
+            WHERE msc_funded = FALSE
             ORDER BY title"));
 
         return $collection->each(function ($row) {

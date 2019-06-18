@@ -27,13 +27,15 @@ class CourseFormatter {
 
                 $category->courses->each(function ($row) {
                     $summaryArr = preg_split("/<p>{mlang} /", $row->keywords);
-                    $frenchSummary = $summaryArr[1];
+                    $frenchSummary = count($summaryArr) > 1 ? $summaryArr[1] : "";
                     
-                    $original = $row->fullname;
-                    $row->fullname = trim(preg_replace("/<span lang=\"en\" class=\"multilang\">[\s\S]*<\/span> <span lang=\"fr\" class=\"multilang\">|<\/span>/", "", $row->fullname));
-                    if($original === $row->fullname) { //only run the second preg_replace if the first did nothing
-                        $row->fullname = trim(preg_replace("/{mlang en}[\s\S]*{mlang}[\s\S]*{mlang fr}|{mlang}[\s\S]*/", "", $row->fullname));
+                    $original = $row->longTitle;
+                    $row->longTitle = trim(preg_replace("/<span lang=\"en\" class=\"multilang\">[\s\S]*<\/span> <span lang=\"fr\" class=\"multilang\">|<\/span>/", "", $row->longTitle));
+                    if($original === $row->longTitle) { //only run the second preg_replace if the first did nothing
+                        $row->longTitle = trim(preg_replace("/{mlang en}[\s\S]*{mlang}[\s\S]*{mlang fr}|{mlang}[\s\S]*/", "", $row->longTitle));
                     }
+
+                    $row->shortTitle = $this->truncate($row->longTitle, 80);
 
                     $row->keywords = preg_replace('~[\s\S]*Mots-clés</span>:\s?<span class="value">|</span></div>\s*<div id="estimatedtime">[\s\S]*~', "", $frenchSummary);
                     $row->estimatedtime = preg_replace('~[\s\S]*urée estimée</span>:\s?<span class="value">|</span></div>\s*<div id="objectives">[\s\S]*~', "", $frenchSummary);
@@ -43,16 +45,19 @@ class CourseFormatter {
                     $row->description = $this->truncate($row->description);
                     $row->objectives = preg_replace('~[\s\S]*<div id="objectives-content">|</div>\s*<div id="description">[\s\S]*~', "", $frenchSummary);
                 });
+
+                $category->courses = $category->courses->sortBy('longTitle');
+
             });
-            return $frenchFormattedCollection->sortBy('name');
+            return $frenchFormattedCollection;
             // $frenchFormattedCollection = $collection->each(function ($row) {
             //     $summaryArr = preg_split("/<p>{mlang} /", $row->keywords);
             //     $frenchSummary = $summaryArr[1];
                 
-            //     $original = $row->fullname;
-            //     $row->fullname = trim(preg_replace("/<span lang=\"en\" class=\"multilang\">[\s\S]*<\/span> <span lang=\"fr\" class=\"multilang\">|<\/span>/", "", $row->fullname));
-            //     if($original === $row->fullname) { //only run the second preg_replace if the first did nothing
-            //         $row->fullname = trim(preg_replace("/{mlang en}[\s\S]*{mlang}[\s\S]*{mlang fr}|{mlang}[\s\S]*/", "", $row->fullname));
+            //     $original = $row->longTitle;
+            //     $row->longTitle = trim(preg_replace("/<span lang=\"en\" class=\"multilang\">[\s\S]*<\/span> <span lang=\"fr\" class=\"multilang\">|<\/span>/", "", $row->longTitle));
+            //     if($original === $row->longTitle) { //only run the second preg_replace if the first did nothing
+            //         $row->longTitle = trim(preg_replace("/{mlang en}[\s\S]*{mlang}[\s\S]*{mlang fr}|{mlang}[\s\S]*/", "", $row->longTitle));
             //     }
 
             //     $row->keywords = preg_replace('~[\s\S]*Mots-clés</span>:\s?<span class="value">|</span></div>\s*<div id="estimatedtime">[\s\S]*~', "", $frenchSummary);
@@ -77,11 +82,13 @@ class CourseFormatter {
                     $summaryArr = preg_split("/<p>{mlang} /", $row->keywords);
                     $englishSummary = $summaryArr[0];
                     
-                    $original = $row->fullname;
-                    $row->fullname = trim(preg_replace("/<span lang=\"en\" class=\"multilang\">|<\/span> <span lang=\"fr\" class=\"multilang\">(.*)<\/span>/", "", $row->fullname));
-                    if($original === $row->fullname) { // only run the second preg_replace if the first did nothing
-                        $row->fullname = trim(preg_replace("/{mlang en}|{mlang}{mlang fr}(.*){mlang}|{mlang} {mlang fr}(.*){mlang}/", "", $row->fullname));
+                    $original = $row->longTitle;
+                    $row->longTitle = trim(preg_replace("/<span lang=\"en\" class=\"multilang\">|<\/span> <span lang=\"fr\" class=\"multilang\">(.*)<\/span>/", "", $row->longTitle));
+                    if($original === $row->longTitle) { // only run the second preg_replace if the first did nothing
+                        $row->longTitle = trim(preg_replace("/{mlang en}|{mlang}{mlang fr}(.*){mlang}|{mlang} {mlang fr}(.*){mlang}/", "", $row->longTitle));
                     }
+
+                    $row->shortTitle = $this->truncate($row->longTitle, 80);
 
                     $row->keywords = preg_replace('~[\s\S]*eywords</span>:\s?<span class="value">|</span></div>\s*<div id="estimatedtime">[\s\S]*~', "", $englishSummary);
                     $row->estimatedtime = preg_replace('~[\s\S]*stimated time to complete</span>:\s?<span class="value">|</span></div>\s*<div id="objectives">[\s\S]*~', "", $englishSummary);
@@ -91,16 +98,19 @@ class CourseFormatter {
                     $row->description = $this->truncate($row->description);
                     $row->objectives = preg_replace('~[\s\S]*<div id="objectives-content">|</div>\s*<div id="description">[\s\S]*~', "", $englishSummary);
                 });
+
+                $category->courses = $category->courses->sortBy('longTitle');
+
             });
-            return $englishFormattedCollection->sortBy('name');
+            return $englishFormattedCollection;
             // $englishFormattedCollection = $collection->each(function ($row) {
             //     $summaryArr = preg_split("/<p>{mlang} /", $row->keywords);
             //     $englishSummary = $summaryArr[0];
                 
-            //     $original = $row->fullname;
-            //     $row->fullname = trim(preg_replace("/<span lang=\"en\" class=\"multilang\">|<\/span> <span lang=\"fr\" class=\"multilang\">(.*)<\/span>/", "", $row->fullname));
-            //     if($original === $row->fullname) { // only run the second preg_replace if the first did nothing
-            //         $row->fullname = trim(preg_replace("/{mlang en}|{mlang}{mlang fr}(.*){mlang}|{mlang} {mlang fr}(.*){mlang}/", "", $row->fullname));
+            //     $original = $row->longTitle;
+            //     $row->longTitle = trim(preg_replace("/<span lang=\"en\" class=\"multilang\">|<\/span> <span lang=\"fr\" class=\"multilang\">(.*)<\/span>/", "", $row->longTitle));
+            //     if($original === $row->longTitle) { // only run the second preg_replace if the first did nothing
+            //         $row->longTitle = trim(preg_replace("/{mlang en}|{mlang}{mlang fr}(.*){mlang}|{mlang} {mlang fr}(.*){mlang}/", "", $row->longTitle));
             //     }
 
             //     $row->keywords = preg_replace('~[\s\S]*eywords</span>:\s?<span class="value">|</span></div>\s*<div id="estimatedtime">[\s\S]*~', "", $englishSummary);
@@ -126,41 +136,43 @@ class CourseFormatter {
     *
     * @return array returns formatted collection of course information
     */
-    public function formatCometCourses($lang, $collection) {
-        $formattedCollection = $collection->each(function ($row) use ($lang) {
-            $row->completionTime = preg_replace("~h~", "", $row->completionTime);
-            $plusFlag = false;
-
-            if(preg_match("~\+~", $row->completionTime)) {
-                preg_replace("~\+~", "", $row->completionTime);
-                $plusFlag = true;
-            }
-            $row->completionTime = rtrim($row->completionTime);
-
-            $timeArr = preg_split("~ - ~", $row->completionTime);
-            $minTime = $this->getCompletionTime($lang, $timeArr[0]);
-            $row->completionTime = $minTime;
-
-            if(count($timeArr) > 1) {
-                $maxTime = $this->getCompletionTime($lang, $timeArr[1]);
-                if($lang === 'fr') {
-                    $row->completionTime = $row->completionTime . " &agrave; " . $maxTime;
-                } else if($lang === 'en') {
-                    $row->completionTime = $row->completionTime . " - " . $maxTime;
+    public function formatCometCourses($lang, $array) {
+        foreach($array as $category) {
+            $category->courses = $category->courses->each(function ($row) use ($lang) {
+                $row->completionTime = preg_replace("~h~", "", $row->completionTime);
+                $plusFlag = false;
+    
+                if(preg_match("~\+~", $row->completionTime)) {
+                    preg_replace("~\+~", "", $row->completionTime);
+                    $plusFlag = true;
                 }
-            }
-            $row->completionTime = rtrim($row->completionTime);
-            if($plusFlag) {
-                $row->completionTime = $row->completionTime . "+";
-            }
-            
-            $row->description = $this->truncate($row->description);
-            $row->shortTitle = $this->truncate($row->shortTitle, 90);
-            $row->lastUpdated = $row->lastUpdated !== "" ? Carbon::parse($row->lastUpdated)->toDateString() : "";
-            $row->publishDate = Carbon::parse($row->publishDate)->toDateString();
-            $row->topics = $this->truncate($row->topics, 70);
-        });
-        return $formattedCollection;
+                $row->completionTime = rtrim($row->completionTime);
+    
+                $timeArr = preg_split("~ - ~", $row->completionTime);
+                $minTime = $this->getCompletionTime($lang, $timeArr[0]);
+                $row->completionTime = $minTime;
+    
+                if(count($timeArr) > 1) {
+                    $maxTime = $this->getCompletionTime($lang, $timeArr[1]);
+                    if($lang === 'fr') {
+                        $row->completionTime = $row->completionTime . " &agrave; " . $maxTime;
+                    } else if($lang === 'en') {
+                        $row->completionTime = $row->completionTime . " - " . $maxTime;
+                    }
+                }
+                $row->completionTime = rtrim($row->completionTime);
+                if($plusFlag) {
+                    $row->completionTime = $row->completionTime . "+";
+                }
+                
+                $row->description = $this->truncate($row->description);
+                $row->shortTitle = $this->truncate($row->shortTitle, 80);
+                $row->lastUpdated = $row->lastUpdated !== "" ? Carbon::parse($row->lastUpdated)->toDateString() : "";
+                $row->publishDate = Carbon::parse($row->publishDate)->toDateString();
+                $row->topics = $this->truncate($row->topics, 70);
+            });
+        }
+        return $array;
     }
 
     /**

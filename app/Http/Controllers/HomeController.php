@@ -20,7 +20,7 @@ class HomeController extends Controller
     */
     public function generatePDF()
     {
-        $lang = "en";
+        $lang = "fr";
 
         $courseFormatter = new CourseFormatter();
 
@@ -71,13 +71,13 @@ class HomeController extends Controller
     */
     public function pdfview()
     {
-        $lang = "en";
+        $lang = "fr";
 
         $courseFormatter = new CourseFormatter();
 
         $moodleCourses = $this->getMoodleCourses();
         $formattedMoodleCourses = $courseFormatter->formatMoodleCourses($lang, $moodleCourses);
-        
+
         $cometCourses = $this->getCometCourses($lang);
         $formattedCometCourses = $courseFormatter->formatCometCourses($lang, $cometCourses);
 
@@ -124,16 +124,41 @@ class HomeController extends Controller
         $moodleCourseCategories = collect(DB::connection('mysql')
             ->select("SELECT c.id, c.name
             FROM `mdl_course_categories` c
-            WHERE c.id NOT IN (10, 28, 29)
+            WHERE c.id NOT IN (29)
             ORDER BY c.name"));
 
-        
+        $moodleCourseCategories->sortBy('name');
+
+        $moodleCourseCategories->add((object)[
+            "id" => 0,
+            "name" => "Other resources"
+        ]);
 
         $moodleCoursesByCategory = $moodleCourseCategories->map(function ($category) {
+            if($category->id === 0) {
+                $category = (array)$category;
+                $category['courses'] = collect(DB::connection('mysql')
+                    ->select("SELECT c.id, c.fullname as 'longTitle', c.fullname as 'shortTitle', c.summary as 'keywords', c.summary as 'estimatedtime', c.timecreated as 'timecreated', c.timecreated as 'lastmodified', c.summary as 'description', c.summary as 'objectives'
+                    FROM mdl_course c
+                    WHERE c.category != 29
+                    AND c.id != 1
+                    AND c.id NOT IN (
+                        SELECT c.id
+                        FROM `mdl_course` c
+                        INNER JOIN `mdl_badge` b on b.courseid = c.id
+                        AND c.visible != 0
+                        AND b.id IN (44,45,8,22,11,12,27,28,34,31,43,42)
+                        GROUP BY c.id
+                    )"));
+                $category = (object)$category;
+
+                return $category;
+            }
+
             $categoryId = $category->id;
             $category = (array)$category;
             $category['courses'] = collect(DB::connection('mysql')
-                ->select("SELECT c.id, ca.id as 'category', c.fullname, c.summary as 'keywords', c.summary as 'estimatedtime', c.timecreated as 'timecreated', max(cm.added) as 'lastmodified', c.summary as 'description', c.summary as 'objectives'
+                ->select("SELECT c.id, ca.id as 'category', c.fullname as 'longTitle', c.fullname as 'shortTitle', c.summary as 'keywords', c.summary as 'estimatedtime', c.timecreated as 'timecreated', max(cm.added) as 'lastmodified', c.summary as 'description', c.summary as 'objectives'
                 FROM `mdl_course` c
                 INNER JOIN `mdl_course_modules` cm on c.id = cm.course
                 INNER JOIN `mdl_course_categories` ca on c.category = ca.id
@@ -147,6 +172,28 @@ class HomeController extends Controller
             return $category;
         });
 
+        // $otherResourcesCourses = collect(DB::connection('mysql')->select(
+        //     "SELECT c.id, c.fullname, c.summary as 'keywords', c.summary as 'estimatedtime', c.timecreated as 'timecreated', c.timecreated as 'lastmodified', c.summary as 'description', c.summary as 'objectives'
+        //     FROM mdl_course c
+        //     WHERE c.category != 29
+        //     AND c.id != 1
+        //     AND c.id NOT IN (
+        //         SELECT c.id
+        //         FROM `mdl_course` c
+        //         INNER JOIN `mdl_badge` b on b.courseid = c.id
+        //         AND c.visible != 0
+        //         AND b.id IN (44,45,8,22,11,12,27,28,34,31,43,42)
+        //         GROUP BY c.id
+        //     )"
+        // ));
+
+        // $otherResources = collect([
+        //     "id" => 0,
+        //     "name" => "Other Resources",
+        //     "courses" => $otherResourcesCourses
+        // ]);
+
+        // $moodleCoursesByCategory->add($otherResources);
         return $moodleCoursesByCategory;
         // $moodleCourses = Cache::rememberForever('moodleCourses', function () {
         //     return collect(DB::connection('mysql')
@@ -174,19 +221,56 @@ class HomeController extends Controller
     * @api
     */
     private function getCometCourses($lang) {
+        // $cometCoursesMscFunded = [
+        //     "name" => 
+        // ];
+        $cometCoursesOther = new Collection;
+
         if($lang === "fr") {
-            $cometCourses = collect(DB::connection('mysql')->select("SELECT ct.id, ct.title as 'longTitle', ct.title as 'shortTitle', ct.publish_date as 'publishDate', ct. last_updated as 'lastUpdated', ct.completion_time as 'completionTime', ct.description as 'description', ct.topics, ct.url as 'URL'
-                FROM `curltest`.`comet_modules` ct
-                WHERE ct.include_in_catalog = TRUE
-                AND ct.language = 'french'
-                ORDER BY ct.title"));
+            $cometCoursesMscFunded = (object)[
+                "id" => 1,
+                "name" => "MSC-funded COMET modules",
+                "courses" => collect(DB::connection('mysql')->select("SELECT ct.id, ct.title as 'longTitle', ct.title as 'shortTitle', ct.publish_date as 'publishDate', ct. last_updated as 'lastUpdated', ct.completion_time as 'completionTime', ct.description as 'description', ct.topics, ct.url as 'URL'
+                            FROM `curltest`.`comet_modules` ct
+                            WHERE ct.include_in_catalog = TRUE AND ct.msc_funded = TRUE
+                            AND ct.language = 'french'
+                            ORDER BY ct.title"))
+            ];
+
+            $cometCoursesOther = (object)[
+                "id" => 2,
+                "name" => "Other COMET modules of interest",
+                "courses" => collect(DB::connection('mysql')->select("SELECT ct.id, ct.title as 'longTitle', ct.title as 'shortTitle', ct.publish_date as 'publishDate', ct. last_updated as 'lastUpdated', ct.completion_time as 'completionTime', ct.description as 'description', ct.topics, ct.url as 'URL'
+                            FROM `curltest`.`comet_modules` ct
+                            WHERE ct.include_in_catalog = TRUE AND ct.msc_funded = FALSE
+                            AND ct.language = 'french'
+                            ORDER BY ct.title"))
+            ];
+
         } else if ($lang === "en") {
-            $cometCourses = collect(DB::connection('mysql')->select("SELECT ct.id, ct.title as 'longTitle', ct.title as 'shortTitle', ct.publish_date as 'publishDate', ct. last_updated as 'lastUpdated', ct.completion_time as 'completionTime', ct.description as 'description', ct.topics, ct.url as 'URL'
-                FROM `curltest`.`comet_modules` ct
-                WHERE ct.include_in_catalog = TRUE
-                AND ct.language = 'english'
-                ORDER BY ct.title"));
+            $cometCoursesMscFunded = (object)[
+                "id" => 1,
+                "name" => "MSC-funded COMET modules",
+                "courses" => collect(DB::connection('mysql')->select("SELECT ct.id, ct.title as 'longTitle', ct.title as 'shortTitle', ct.publish_date as 'publishDate', ct. last_updated as 'lastUpdated', ct.completion_time as 'completionTime', ct.description as 'description', ct.topics, ct.url as 'URL'
+                            FROM `curltest`.`comet_modules` ct
+                            WHERE ct.include_in_catalog = TRUE AND ct.msc_funded = TRUE
+                            AND ct.language = 'english'
+                            ORDER BY ct.title"))
+            ];
+
+            $cometCoursesOther = (object)[
+                "id" => 2,
+                "name" => "Other COMET modules of interest",
+                "courses" => collect(DB::connection('mysql')->select("SELECT ct.id, ct.title as 'longTitle', ct.title as 'shortTitle', ct.publish_date as 'publishDate', ct. last_updated as 'lastUpdated', ct.completion_time as 'completionTime', ct.description as 'description', ct.topics, ct.url as 'URL'
+                            FROM `curltest`.`comet_modules` ct
+                            WHERE ct.include_in_catalog = TRUE AND ct.msc_funded = FALSE
+                            AND ct.language = 'english'
+                            ORDER BY ct.title"))
+            ];
         }
+
+        $cometCourses = [$cometCoursesMscFunded, $cometCoursesOther];
+
         return $cometCourses;
     }
 }
